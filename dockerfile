@@ -1,9 +1,5 @@
-FROM ubuntu:latest
-RUN apt-get -y update && apt-get -y upgrade
-RUN apt-get -y install openjdk-8-jdk wget
-RUN cd /opt
-RUN wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.33/bin/apache-tomcat-9.0.33.zip
-unzip apache-tomcat-9.0.33.zip
-cd /opt/apache-tomcat-9.0.33
+FROM tomcat:latest
+ADD sample.war /usr/local/tomcat/webapps/
 EXPOSE 8080
-CMD /opt/apache-tomcat-9.0.33/bin/catalina.sh run
+CMD chmod +x /usr/local/tomcat/bin/catalina.sh
+CMD ["catalina.sh", "run"]
