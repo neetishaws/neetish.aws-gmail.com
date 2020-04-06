@@ -8,7 +8,17 @@ pipeline {
   stages {
     stage('Cloning Git') {
       steps {
-        git 'https://github.com/neetishaws/neetish.aws-gmail.com.git'
+ pipeline {
+  environment {
+    registry = "neetishdocker/docker-test"
+    registryCredential = 'Brgpk@3217d'
+    dockerImage = 'docker.build registry + ":$BUILD_NUMBER"'
+  }
+  agent any
+  stages {
+    stage('Cloning Git') {
+      steps {
+        git credentialsId: 'ef1dc831-ee2a-421a-b3a2-29ce432a5473', url: 'https://github.com/neetishaws/neetish.aws-gmail.com.git'
       }
     }
     stage('Building image') {
@@ -34,3 +44,28 @@ pipeline {
     }
   }
 }
+      }
+    }
+    stage('Building image') {
+      steps{
+        script {
+          dockerImage = docker.build registry + ":$BUILD_NUMBER"
+        }
+      }
+    }
+    stage('Deploy Image') {
+      steps{
+        script {
+          docker.withRegistry( '', registryCredential ) {
+            dockerImage.push()
+          }
+        }
+      }
+    }
+    stage('Remove Unused docker image') {
+      steps{
+        sh "docker rmi $registry:$BUILD_NUMBER"
+      }
+    }
+  }
+i}
